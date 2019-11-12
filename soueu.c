@@ -6,12 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define Teodoro 'T'
-#define Fabio 'F'
-#define Patricia 'P'
 #define Ester 'E'
-#define ull unsigned long long
+#define Fabio 'F'
+#define Teodoro 'T'
+#define Patricia 'P'
+
 #define ulll __uint128_t
+#define ull unsigned long long
+
+char comando;
 
 /*
 ###############################################################################
@@ -25,6 +28,10 @@ void C(){
 
 void E(){
     printf("E\n");
+}
+
+void X(){
+    printf("X\n");
 }
 
 
@@ -43,7 +50,7 @@ Funções core do trabalho.
 */
 void doTeodoro(){
 
-    char comando;
+    ulll n = 0;
 
     do{
 
@@ -53,28 +60,63 @@ void doTeodoro(){
             ull p, q;
             scanf(" %lld %lld", &p, &q);
 
-
+            n = (ulll) p * q;
 
             C();
         }
 
         if(comando == 'A'){
 
+            if(!n)
+                E();
+
+            else{
+                X();
+            }
         }
 
     } while (comando != 'T');
+    
+    C();
 }
 
 /*
     Modo Fábio, comandos disponiveis: 
     I (Identificar)                 Parâmetro(s): <n> <s> <v>       | Saída: C (Sucesso) ou E (Erro)
     X (Iniciar)                     Parâmetro(s):                   | Saída: C (Sucesso) <x> ou E (Erro)
+    P (Preparar)                    Parâmetro(s): <r>               | Saída: C (Sucesso) <x> ou E (Erro)
     R (Responder)                   Parâmetro(s): <b>               | Saída: C (Sucesso) <xb> ou E (Erro)
     T (Terminar)                    Parâmetro(s):                   | Saída: C (Sucesso) 
 
 */
 void doFabio(){
 
+    ulll n;
+    ull s, v, x;
+
+    do{
+
+        scanf("%c", &comando);
+
+        if(comando == 'I'){
+            X();
+        }
+
+        if(comando == 'X'){
+            X();
+        }
+
+        if(comando == 'P'){
+            X();
+        }
+
+        if(comando == 'R'){
+            X();
+        }
+
+    } while (comando != 'T');
+
+    C();
 }
 
 /*
@@ -87,6 +129,28 @@ void doFabio(){
 */
 void doPatricia(){
 
+    ulll n;
+    ull v, t, x, xb;
+
+    do{
+
+        scanf("%c", &comando);
+
+        if(comando == 'I'){
+            X();
+        }
+
+        if(comando == 'Q'){
+            X();
+        }
+
+        if(comando == 'V'){
+            X();
+        }
+
+    } while (comando != 'T');
+
+    C();
 }
 
 /*
@@ -99,6 +163,28 @@ void doPatricia(){
 */
 void doEster(){
 
+    ulll n;
+    ull v, x, xb, s;
+
+    do{
+
+        scanf("%c", &comando);
+
+        if(comando == 'I'){
+            X();
+        }
+
+        if(comando == 'P'){
+            X();
+        }
+
+        if(comando == 'S'){
+            X();
+        }
+
+    } while (comando != 'T');
+
+    C();
 }
 
 /*
@@ -133,9 +219,5 @@ int main(int argc, char **argv){
         case Ester:
             doPatricia();
             break;
-
-        default:
-            printf("Modo selecionado inválido.");
-            exit(1);
     }
 }
