@@ -101,6 +101,7 @@ void print128(ulll u128){
 
         ull u64 = u128;
         printf("%" PRIu64, u64);
+        printf("\n");
     }
 }
 
@@ -193,11 +194,11 @@ void doTeodoro(){
 */
 void doFabio(){
 
-    ull n = 0;
-    ull r = 0;
+    ulll n = 0;
+    ulll r = 0;
     ull s = 0;
     ull v = 0;
-    ull x = 0;
+    ulll x = 0;
 
     do{
         scanf("%c", &comando);
@@ -211,8 +212,9 @@ void doFabio(){
             }
 
             else{
-
-                scanf(" %llu %llu %llu", &n, &s, &v);
+                ull temp;
+                scanf(" %llu %llu %llu", &temp, &s, &v);
+                n += temp;
 
                 if(n < s || v > n)
                     E();
@@ -228,17 +230,20 @@ void doFabio(){
 
         if(comando == 'P'){
             
-            // Not done.
+            // Done(?).
 
-            scanf(" %llu", &r);
+            ull temp;
+            scanf(" %llu", &temp);
+            r += temp;
 
             if(!n)
                 E();
             else{
 
-                x = (((r % n) * (r % n)) % n);
-
-                printf("C %llu\n", x); 
+                x = (r * r) % n;
+                printf("C ");
+                print128(x);
+                //printf("C %llu\n", x); 
             }
         }
 
