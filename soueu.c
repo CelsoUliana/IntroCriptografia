@@ -3,6 +3,7 @@
     Nov 2019
 */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -15,7 +16,9 @@
 #define ulll __uint128_t
 #define l long
 #define ll long long
+#define ul unsigned long
 #define ull unsigned long long
+
 
 /*
     UINT64_MAX 18446744073709551615ULL 
@@ -46,6 +49,27 @@ void E(){
 
 void X(){
     printf("X\n");
+}
+
+
+ll extendedEuclid(ll a, ll b, ll *x, ll *y)	{
+    ll t, d;
+    if (b == 0)	{
+        *x = 1; 
+        *y = 0; 
+        return a;
+    }
+    d = extendedEuclid(b, a % b, x, y);
+    t = *x;
+    *x = *y; 
+    *y = t - (a / b) * (*y);
+    return d;
+}
+
+ll modInverse(ll a, ll n)  {
+    ll x, y;
+    extendedEuclid(a, n, &x, &y);
+    return (x < 0) ? (x + n) : x;
 }
 
 
@@ -84,11 +108,13 @@ void print128(ulll u128){
     Gera um número random num range N(Pode não ser potencia de 2) uniformemente distrubuido.
     rand() gera um valor int entre 0...2^31 - 1(RAND_MAX)
 */
+
+/*
 ll generateRandom64(ll n) {
     /*
         Duas variáveis inteiras de 32 bits, para gerar um int x de 64 bits no range.
         0 < x < n < INT64MAX
-    */
+    
 
     ll x;
 
@@ -98,7 +124,7 @@ ll generateRandom64(ll n) {
 
     return x;
 }
-
+*/
 
 
 /*
@@ -141,12 +167,20 @@ void doTeodoro(){
 
         if(comando == 'A'){
 
+            ll temp = modInverse(27, 221);
+
+            temp = (((ll) pow(temp, 2)) % 221);  
+
+            printf("modinverso = %lld r = %lld n = %lld", temp, 27, 221);
+
+            /*
             if(!n)
                 E();
 
             else{
                 X();
             }
+            */
         }
 
     } while (comando != 'T');
@@ -165,15 +199,27 @@ void doTeodoro(){
 */
 void doFabio(){
 
-    ulll n;
-    ull s, v, x;
+    ull n = 0;
+    ull r = 0;
+    ull s = 0;
+    ull v = 0;
+    ull x = 0;
 
     do{
-
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            X();
+
+            if(n || s || v){
+                E();
+            }
+
+            else{
+
+                scanf(" %llu %llu %llu", &n, &s, &v);
+
+                C();
+            }
         }
 
         if(comando == 'X'){
@@ -181,11 +227,38 @@ void doFabio(){
         }
 
         if(comando == 'P'){
-            X();
+
+            scanf(" %llu", &r);
+
+            if(!n)
+                E();
+            else{
+
+                x = (((r % n) * (r % n)) % n);
+
+                printf("C %llu\n", x); 
+            }
         }
 
         if(comando == 'R'){
-            X();
+
+            int bit;
+            scanf(" %d", &bit);
+
+            if(!x){
+                E();
+            }
+
+            else{
+                if(bit == 0){
+                    ull y = ((r * s) % n);
+                    printf("C %llu\n", y);
+                }
+                else if(bit == 1)
+                    printf("C %llu\n", r);
+                else
+                    E();
+            }
         }
 
     } while (comando != 'T');
