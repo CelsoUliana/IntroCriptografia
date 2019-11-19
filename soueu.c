@@ -4,6 +4,7 @@
 */
 
 #include <math.h>
+#include <time.h> 
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -135,24 +136,27 @@ Funções core do trabalho.
 
 /*
     Modo Teodoro, comandos disponiveis: 
-    I (Inicializar)                 Parâmetro(s): <p> <q>           | Saída: C (Sucesso) ou E (Erro)
+    I (Inicializar)                 Parâmetro(s): <p> <q>           | Saída: C (Sucesso) <n> ou E (Erro)
     A (Autenticar)                  Parâmetro(s):                   | Saída: C (Sucesso) <v> <s> ou E (Erro)
     T (Terminar)                    Parâmetro(s):                   | Saída: C (Sucesso) 
 
 */
 void doTeodoro(){
 
-    ll n = 0;
+    ull n = 0;
 
     do{
 
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            l p, q;
-            scanf(" %ld %ld", &p, &q);
+            // Done.
+            ll p, q;
+            scanf(" %lld %lld", &p, &q);
 
-            n = (ll) p * q;
+            n = (ull) p * q;
+
+            printf("C %llu\n", n);
 
             /*
             n = ((ulll)UINT64_MAX + 1) * 0x1234567890ABCDEFULL +
@@ -161,26 +165,16 @@ void doTeodoro(){
 
             //print128(n);  
             //printf("\n");
-
-            C();
         }
 
         if(comando == 'A'){
-
-            ll temp = modInverse(27, 221);
-
-            temp = (((ll) pow(temp, 2)) % 221);  
-
-            printf("modinverso = %lld r = %lld n = %lld", temp, 27, 221);
-
-            /*
+            // Not done.
             if(!n)
                 E();
 
             else{
                 X();
             }
-            */
         }
 
     } while (comando != 'T');
@@ -210,6 +204,8 @@ void doFabio(){
 
         if(comando == 'I'){
 
+            // Done.
+
             if(n || s || v){
                 E();
             }
@@ -218,15 +214,21 @@ void doFabio(){
 
                 scanf(" %llu %llu %llu", &n, &s, &v);
 
-                C();
+                if(n < s || v > n)
+                    E();
+                else
+                    C();
             }
         }
 
         if(comando == 'X'){
+            // Not done.
             X();
         }
 
         if(comando == 'P'){
+            
+            // Not done.
 
             scanf(" %llu", &r);
 
@@ -241,7 +243,7 @@ void doFabio(){
         }
 
         if(comando == 'R'){
-
+            // Not done.
             int bit;
             scanf(" %d", &bit);
 
@@ -250,11 +252,11 @@ void doFabio(){
             }
 
             else{
-                if(bit == 0){
-                    ull y = ((r * s) % n);
+                if(bit == 1){
+                    ull y = (((r % n) * (s % n)) % n);
                     printf("C %llu\n", y);
                 }
-                else if(bit == 1)
+                else if(bit == 0)
                     printf("C %llu\n", r);
                 else
                     E();
@@ -276,23 +278,56 @@ void doFabio(){
 */
 void doPatricia(){
 
-    ulll n;
-    ull v, t, x, xb;
+    ull n = 0;
+    ull v = 0;
+    ull t = 0;
+    ull x = 0;
+    ull xb = 0;
+
+    int flag = 0;
 
     do{
 
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            X();
+            //Done.
+            scanf(" %llu %llu %llu", &n, &v, &t);
+
+            if(v > n || t > n)
+                E();
+            else
+                C();
         }
 
         if(comando == 'Q'){
-            X();
+
+            //Done.
+            if(flag)
+                E();
+            else{
+                scanf(" %llu", &x);
+                int bit = (rand() % 2);
+
+                printf("C %d\n", bit);
+                flag = 1;
+            }
         }
 
         if(comando == 'V'){
-            X();
+            //Not done.
+            scanf(" %llu", &xb);
+
+            //Realmente validar o breguete.
+
+            t--;
+
+            if(!t)
+                E();
+            else{
+                printf("C %llu\n", t);
+                flag = 0;
+            }
         }
 
     } while (comando != 'T');
@@ -310,23 +345,41 @@ void doPatricia(){
 */
 void doEster(){
 
-    ulll n;
-    ull v, x, xb, s;
+    ull n = 0;
+    ull v = 0;
+    ull x = 0;
+    ull s = 0;
+    ull xb = 0;
+    ull x0 = 0;
+    ull x1 = 0;
+    int bit = -1;
+
 
     do{
 
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            X();
+            //Done.
+            scanf(" %llu %llu", &n, &v);
+
+            if(v > n)
+                E();
+            else
+                C();
         }
 
         if(comando == 'P'){
-            X();
+            //Not done.
+            scanf(" %d", &bit);
+
+            printf("C %llu %llu\n", x, xb);
         }
 
         if(comando == 'S'){
-            X();
+            //Not Done.
+            scanf(" %llu %llu", &x0, &x1);
+            printf("C %llu", s);
         }
 
     } while (comando != 'T');
@@ -347,6 +400,8 @@ int main(int argc, char **argv){
         fprintf(stderr, "Uso: %s <modo: F | P | T | E >\n", argv[0]);
         exit(1);
     }
+
+    srand(time(0)); 
 
     modo = argv[1][0];
 
