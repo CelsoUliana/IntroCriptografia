@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #define Ester 'E'
 #define Fabio 'F'
@@ -12,9 +13,22 @@
 #define Patricia 'P'
 
 #define ulll __uint128_t
+#define l long
+#define ll long long
 #define ull unsigned long long
 
+/*
+    UINT64_MAX 18446744073709551615ULL 
+*/
+#define P10_UINT64 10000000000000000000ULL   /* 19 zeroes */
+#define E10_UINT64 19
+
+#define STRINGIZER(x)   # x
+#define TO_STRING(x)    STRINGIZER(x)
+
+
 char comando;
+
 
 /*
 ###############################################################################
@@ -36,6 +50,58 @@ void X(){
 
 
 /*
+    Função auxiliar de printar digitos de um inteiro de 128 bits sem sinal,
+    retorna a quantidade de digitos em decimal desse inteiro.
+*/
+void print128(ulll u128){
+
+    /*
+        Maior valor definido por uma variável 64 bits sem sinal.
+        definida no <inttypes.h>
+    */
+    if (u128 > UINT64_MAX){
+
+        /*
+            Resto da divisão com 10^19 vira um unsigned long long, que é recursivamente
+            chamado para entrar no else.
+        */
+
+        ulll leading  = u128 / P10_UINT64;
+        ull trailing = u128 % P10_UINT64;
+        print128(leading);
+        printf("%." TO_STRING(E10_UINT64) PRIu64, trailing);
+    }
+
+    else{
+
+        ull u64 = u128;
+        printf("%" PRIu64, u64);
+    }
+}
+
+
+/*
+    Gera um número random num range N(Pode não ser potencia de 2) uniformemente distrubuido.
+    rand() gera um valor int entre 0...2^31 - 1(RAND_MAX)
+*/
+ll generateRandom64(ll n) {
+    /*
+        Duas variáveis inteiras de 32 bits, para gerar um int x de 64 bits no range.
+        0 < x < n < INT64MAX
+    */
+
+    ll x;
+
+    first = rand();
+    second = rand();
+
+
+    return x;
+}
+
+
+
+/*
 ###############################################################################
 Funções core do trabalho.
 ###############################################################################
@@ -50,17 +116,25 @@ Funções core do trabalho.
 */
 void doTeodoro(){
 
-    ulll n = 0;
+    ll n = 0;
 
     do{
 
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            ull p, q;
-            scanf(" %lld %lld", &p, &q);
+            l p, q;
+            scanf(" %ld %ld", &p, &q);
 
-            n = (ulll) p * q;
+            n = (ll) p * q;
+
+            /*
+            n = ((ulll)UINT64_MAX + 1) * 0x1234567890ABCDEFULL +
+                      0xFEDCBA9876543210ULL;
+            */
+
+            //print128(n);  
+            //printf("\n");
 
             C();
         }
