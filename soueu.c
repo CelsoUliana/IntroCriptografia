@@ -110,23 +110,52 @@ void print128(ulll u128){
     Gera um número random num range N(Pode não ser potencia de 2) uniformemente distrubuido.
     rand() gera um valor int entre 0...2^31 - 1(RAND_MAX)
 */
+ull randomBinarySearch(ull low, ull high, long * seed, int * count){
+    //printf("high: %llu, low: %llu, seed: %ld, count: %d\n", high, low, *seed, *count);
+    if(low == high)
+        return low;
 
-/*
-ll generateRandom64(ll n) {
+    else{
+
+        ull mid = low + (high - low) / 2; 
+
+        if(((* count) % 31) == 0){
+            long temp = rand();
+            seed = &temp;
+        }
+
+        int bit = * seed & 1;
+        * seed = * seed >> 1;
+        *count = * count + 1;
+
+        if(bit)        
+            randomBinarySearch(mid + 1, high, seed, count);
+
+        else
+            randomBinarySearch(low, mid - 1, seed, count);
+    }
+}
+
+
+ull generateRandom64(ull n) {
     /*
         Duas variáveis inteiras de 32 bits, para gerar um int x de 64 bits no range.
         0 < x < n < INT64MAX
-    
+    */
 
-    ll x;
+    long seed = rand();
+    long * sd = &seed;
+    int zero = 0;
+    int * zr = &zero;
 
-    first = rand();
-    second = rand();
+    ull rnd = randomBinarySearch(0, n - 1, sd, zr);
+
+    printf("%llu\n", rnd);
 
 
-    return x;
+    return 0;
 }
-*/
+
 
 
 /*
@@ -225,7 +254,8 @@ void doFabio(){
         }
 
         if(comando == 'X'){
-            // Not done.
+            ull tempn = n;
+            generateRandom64(tempn);
             X();
         }
 
