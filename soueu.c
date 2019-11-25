@@ -53,8 +53,8 @@ void X(){
 }
 
 
-ll extendedEuclid(ll a, ll b, ll *x, ll *y)	{
-    ll t, d;
+ulll extendedEuclid(ulll a, ulll b, ulll *x, ulll *y)	{
+    ulll t, d;
     if (b == 0)	{
         *x = 1; 
         *y = 0; 
@@ -67,8 +67,8 @@ ll extendedEuclid(ll a, ll b, ll *x, ll *y)	{
     return d;
 }
 
-ll modInverse(ll a, ll n)  {
-    ll x, y;
+ulll modInverse(ulll a, ulll n)  {
+    ulll x, y;
     extendedEuclid(a, n, &x, &y);
     return (x < 0) ? (x + n) : x;
 }
@@ -87,7 +87,7 @@ void print128(ulll u128){
     if (u128 > UINT64_MAX){
 
         /*
-            Resto da divisão com 10^19 vira um unsigned long long, que é recursivamente
+            Resto da divisão com 10^19 cabe em um unsigned long long, que é recursivamente
             chamado para entrar no else.
         */
 
@@ -199,6 +199,7 @@ void doFabio(){
     ull s = 0;
     ull v = 0;
     ulll x = 0;
+    int flag = 0;
 
     do{
         scanf("%c", &comando);
@@ -207,16 +208,16 @@ void doFabio(){
 
             // Done.
 
-            if(n || s || v){
+            if(s || v){
                 E();
             }
 
             else{
                 ull temp;
                 scanf(" %llu %llu %llu", &temp, &s, &v);
-                n += temp;
+                n = temp;
 
-                if(n < s || v > n)
+                if(n < s || v > n || 2 > n)
                     E();
                 else
                     C();
@@ -234,15 +235,16 @@ void doFabio(){
 
             ull temp;
             scanf(" %llu", &temp);
-            r += temp;
+            r = temp;
 
-            if(!n)
+            if(!n || r > n)
                 E();
             else{
 
                 x = (r * r) % n;
                 printf("C ");
                 print128(x);
+                flag = 1;
                 //printf("C %llu\n", x); 
             }
         }
@@ -257,12 +259,17 @@ void doFabio(){
             }
 
             else{
-                if(bit == 1){
-                    ull y = (((r % n) * (s % n)) % n);
-                    printf("C %llu\n", y);
+                if(bit == 1 && flag){
+                    ulll y = ((r * s) % n);
+                    printf("C ");
+                    print128(y);
+                    flag = 0;
                 }
-                else if(bit == 0)
-                    printf("C %llu\n", r);
+                else if(bit == 0 && flag){
+                    printf("C ");
+                    print128(r);
+                    flag = 0;
+                }
                 else
                     E();
             }
@@ -283,13 +290,13 @@ void doFabio(){
 */
 void doPatricia(){
 
-    ull n = 0;
     ull v = 0;
-    ull t = 0;
     ull x = 0;
+    ulll n = 0;
     ull xb = 0;
 
-    int flag = 0;
+    int globalt, t = 0;
+    int bit, flag = 0;
 
     do{
 
@@ -297,7 +304,10 @@ void doPatricia(){
 
         if(comando == 'I'){
             //Done.
-            scanf(" %llu %llu %llu", &n, &v, &t);
+            ull temp;
+            scanf(" %llu %llu %d", &temp, &v, &globalt);
+            t = globalt;
+            n = temp;
 
             if(v > n || t > n)
                 E();
@@ -312,7 +322,7 @@ void doPatricia(){
                 E();
             else{
                 scanf(" %llu", &x);
-                int bit = (rand() % 2);
+                bit = (rand() % 2);
 
                 printf("C %d\n", bit);
                 flag = 1;
@@ -330,7 +340,79 @@ void doPatricia(){
             if(!t)
                 E();
             else{
-                printf("C %llu\n", t);
+
+                if(bit){
+                    ulll y = xb;
+                    ulll tempv = v;
+                    ulll temp = ((y * y) * v) % n;
+                    if(temp == x)
+                        printf("C %d\n", t);
+                    else{
+                        printf("E %d\n", t);
+                        t = globalt;
+                    }
+                }
+
+                else{
+                    // xb == r
+                    ulll r = xb;
+                    ulll temp = (r * r) % n;
+                    if(temp == x)
+                        printf("C %d\n", t);
+                    else{
+                        printf("E %d\n", t);
+                        t = globalt;
+                    }
+                }
+
+                flag = 0;
+            }
+        }
+
+        if(comando == 'C'){
+            ulll x, xb;
+            int localbit;
+            ull tempx, tempxb;
+            scanf(" %llu %d %llu", &tempx, &localbit, &tempxb);
+
+            x = tempx;
+            xb = tempxb;
+
+            if(!t)
+                printf("E %d\n", t);
+            else{
+
+                if(localbit){
+
+                    ulll y = xb;
+                    ulll tempv = v;
+                    ulll temp = ((y * y) * v) % n;
+
+                    if(temp == x){
+                        t--;
+                        printf("C %d\n", t);
+                    }
+                    else{
+                        printf("E %d\n", t);
+                        t = globalt;
+                    }
+                }
+
+                else{
+
+                    ulll r = xb;
+                    ulll temp = (r * r) % n;
+
+                    if(temp == x){
+                        t--;
+                        printf("C %d\n", t);
+                    }
+                    else{
+                        printf("E %d\n", t);
+                        t = globalt;
+                    }
+                }
+
                 flag = 0;
             }
         }
@@ -345,15 +427,15 @@ void doPatricia(){
     I (Inicializar)                 Parâmetro(s): <n> <v>           | Saída: C (Sucesso) ou E (Erro)
     P (Preparar)                    Parâmetro(s): <b>               | Saída: C (Sucesso) <x> <xb> ou E (Erro)
     T (Terminar)                    Parâmetro(s): <xb>              | Saída: C (Sucesso)
-    S (Sorte)                       Parâmetro(s): <x0> <x1)         | Saída: C (Sucesso) <s>
+    S (Sorte)                       Parâmetro(s): <x0> <x1>         | Saída: C (Sucesso) <s>
 
 */
 void doEster(){
 
-    ull n = 0;
+    ulll n = 0;
     ull v = 0;
     ull x = 0;
-    ull s = 0;
+    ulll s = 0;
     ull xb = 0;
     ull x0 = 0;
     ull x1 = 0;
@@ -366,9 +448,12 @@ void doEster(){
 
         if(comando == 'I'){
             //Done.
-            scanf(" %llu %llu", &n, &v);
+            ull temp;
+            scanf(" %llu %llu", &temp, &v);
+            n = temp;
 
-            if(v > n)
+
+            if(v > n || 2 > n)
                 E();
             else
                 C();
@@ -383,8 +468,15 @@ void doEster(){
 
         if(comando == 'S'){
             //Not Done.
-            scanf(" %llu %llu", &x0, &x1);
-            printf("C %llu", s);
+            ull xtemp0, xtemp1;
+            scanf(" %llu %llu", &xtemp0, &xtemp1);
+            x0 = xtemp0;
+            x1 = xtemp1;
+
+            s = x0 / x1;
+            //s = s % n;
+
+            print128(s);
         }
 
     } while (comando != 'T');
@@ -424,7 +516,7 @@ int main(int argc, char **argv){
             break;
 
         case Ester:
-            doPatricia();
+            doEster();
             break;
     }
 }
