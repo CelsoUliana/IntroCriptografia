@@ -52,7 +52,19 @@ void X(){
     printf("X\n");
 }
 
+/*
+    Função de mdc basica pra tirar o mdc entre 2 numeros.
+*/
+ull mdc(ull a, ull b) 
+{ 
+    if (a == 0) 
+        return b; 
+    return mdc(b % a, a); 
+} 
 
+/*
+    Algoritmo euclidano extendido para o inverso modular.
+*/
 ulll extendedEuclid(ulll a, ulll b, ulll *x, ulll *y)	{
     ulll t, d;
     if (b == 0)	{
@@ -72,7 +84,6 @@ ulll modInverse(ulll a, ulll n)  {
     extendedEuclid(a, n, &x, &y);
     return (x < 0) ? (x + n) : x;
 }
-
 
 /*
     Função auxiliar de printar digitos de um inteiro de 128 bits sem sinal,
@@ -148,12 +159,9 @@ ull generateRandom64(ull n) {
     int zero = 0;
     int * zr = &zero;
 
-    ull rnd = randomBinarySearch(0, n - 1, sd, zr);
+    ull rnd = randomBinarySearch(2, n - 1, sd, zr);
 
-    printf("%llu\n", rnd);
-
-
-    return 0;
+    return rnd;
 }
 
 
@@ -168,42 +176,85 @@ Funções core do trabalho.
     Modo Teodoro, comandos disponiveis: 
     I (Inicializar)                 Parâmetro(s): <p> <q>           | Saída: C (Sucesso) <n> ou E (Erro)
     A (Autenticar)                  Parâmetro(s):                   | Saída: C (Sucesso) <v> <s> ou E (Erro)
+    F (Forjar)                      Parâmetro(s): <s>               | Saída: C (Sucesso) <v> ou E (Erro)
     T (Terminar)                    Parâmetro(s):                   | Saída: C (Sucesso) 
 
 */
 void doTeodoro(){
 
-    ull n = 0;
+    ulll s = 0;
+    ulll v = 0;
+    ulll n = 0;
 
     do{
 
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            // Done.
-            ll p, q;
+            ull p, q;
             scanf(" %lld %lld", &p, &q);
 
-            n = (ull) p * q;
+            n = p * q;
 
-            printf("C %llu\n", n);
-
-            /*
-            n = ((ulll)UINT64_MAX + 1) * 0x1234567890ABCDEFULL +
-                      0xFEDCBA9876543210ULL;
-            */
-
-            //print128(n);  
-            //printf("\n");
+            printf("C ");
+            print128(n);
         }
 
         if(comando == 'A'){
-            // Not done.
+
             if(!n)
                 E();
 
             else{
-                X();
+                v = n + 1;
+
+                while(v > n){
+                    ull temps;
+                    temps = generateRandom64(n);
+                    if(mdc(temps, (ull) n) != 1)
+                        temps++;
+
+                    s = temps;
+                    s = (s * s) % n;
+
+                    v = modInverse(s, n);
+                
+                }
+
+                ull temps = (ull) s;
+                ull tempv = (ull) v;
+                
+                printf("C %llu %llu\n", tempv, temps);
+            }
+        }
+
+        if(comando == 'F'){
+
+            if(!n)
+                E();
+
+            else{
+                scanf(" %llu", &s);
+
+                if(mdc(s, (ull) n) != 1 || s > n || 2 > s)
+                    E();
+
+                else{
+
+                    ulll temps = s;
+                    temps = (s * s) % n;
+                    s = (ull) temps;
+
+                    v = modInverse(s, n);
+
+                    if(v > n)
+                        v = v % n;
+
+                    ull tempv = (ull) v;
+
+                    printf("C %llu\n", tempv);
+                }
+
             }
         }
 
@@ -235,33 +286,40 @@ void doFabio(){
 
         if(comando == 'I'){
 
-            // Done.
+            ull temp;
+            scanf(" %llu %llu %llu", &temp, &s, &v);
+            n = temp;
 
-            if(s || v){
+            if(n < s || v > n || 6 > n || 2 > v || 2 > s)
                 E();
-            }
-
-            else{
-                ull temp;
-                scanf(" %llu %llu %llu", &temp, &s, &v);
-                n = temp;
-
-                if(n < s || v > n || 2 > n)
-                    E();
-                else
-                    C();
-            }
+            else
+                C();
         }
 
         if(comando == 'X'){
-            ull tempn = n;
-            generateRandom64(tempn);
-            X();
+
+            if(!n)
+                E();
+
+            else{
+
+                ull tempn = n;
+                ull r = generateRandom64(tempn);
+
+                while(r < n)
+                    r = generateRandom64(tempn);
+
+                if(mdc(r, n) != 1)
+                    r++;
+
+                x = (r * r) % n;
+                printf("C ");
+                print128(x);
+                flag = 1;
+            }
         }
 
         if(comando == 'P'){
-            
-            // Done(?).
 
             ull temp;
             scanf(" %llu", &temp);
@@ -275,12 +333,11 @@ void doFabio(){
                 printf("C ");
                 print128(x);
                 flag = 1;
-                //printf("C %llu\n", x); 
             }
         }
 
         if(comando == 'R'){
-            // Not done.
+
             int bit;
             scanf(" %d", &bit);
 
@@ -289,17 +346,22 @@ void doFabio(){
             }
 
             else{
+
                 if(bit == 1 && flag){
+
                     ulll y = ((r * s) % n);
                     printf("C ");
                     print128(y);
                     flag = 0;
                 }
+
                 else if(bit == 0 && flag){
+
                     printf("C ");
                     print128(r);
                     flag = 0;
                 }
+
                 else
                     E();
             }
@@ -314,8 +376,9 @@ void doFabio(){
     Modo Patrícia, comandos disponiveis: 
     I (Inicializar)                 Parâmetro(s): <n> <v> <t>       | Saída: C (Sucesso) ou E (Erro)
     Q (Receber Compromisso)         Parâmetro(s): <x>               | Saída: C (Sucesso) <b> ou E (Erro)
-    V (Valida Resposta)             Parâmetro(s): <xb>              | Saída: C (Sucesso) <i> ou E (Erro)
-    T (Finalizar)                   Parâmetro(s):                   | Saída: C (Sucesso) <i> <f>
+    V (Valida Resposta)             Parâmetro(s): <xb>              | Saída: C (Sucesso) <i> ou E <i> (Erro)
+    C (Testa Compromisso)           Parâmetro(s): <x> <b> <xb>      | Saída: C (Sucesso) <i> ou E <i> (Erro)
+    T (Finalizar)                   Parâmetro(s):                   | Saída: C (Sucesso)
 
 */
 void doPatricia(){
@@ -333,13 +396,13 @@ void doPatricia(){
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            //Done.
+
             ull temp;
             scanf(" %llu %llu %d", &temp, &v, &globalt);
             t = globalt;
             n = temp;
 
-            if(v > n || t > n)
+            if(v > n || t > n || v < 2)
                 E();
             else
                 C();
@@ -347,7 +410,6 @@ void doPatricia(){
 
         if(comando == 'Q'){
 
-            //Done.
             if(flag)
                 E();
             else{
@@ -360,23 +422,22 @@ void doPatricia(){
         }
 
         if(comando == 'V'){
-            //Not done.
             scanf(" %llu", &xb);
-
-            //Realmente validar o breguete.
-
-            t--;
 
             if(!t)
                 E();
             else{
 
                 if(bit){
+
                     ulll y = xb;
                     ulll tempv = v;
                     ulll temp = ((y * y) * v) % n;
-                    if(temp == x)
+
+                    if(temp == x){
+                        t--;
                         printf("C %d\n", t);
+                    }
                     else{
                         printf("E %d\n", t);
                         t = globalt;
@@ -384,11 +445,14 @@ void doPatricia(){
                 }
 
                 else{
-                    // xb == r
+
                     ulll r = xb;
                     ulll temp = (r * r) % n;
-                    if(temp == x)
+
+                    if(temp == x){
+                        t--;
                         printf("C %d\n", t);
+                    }
                     else{
                         printf("E %d\n", t);
                         t = globalt;
@@ -465,7 +529,6 @@ void doEster(){
     ulll n = 0;
     ull v = 0;
     ull x = 0;
-    ulll s = 0;
     ull xb = 0;
     ull x0 = 0;
     ull x1 = 0;
@@ -477,34 +540,30 @@ void doEster(){
         scanf("%c", &comando);
 
         if(comando == 'I'){
-            //Done.
+
             ull temp;
             scanf(" %llu %llu", &temp, &v);
             n = temp;
 
 
-            if(v > n || 2 > n)
+            if(v > n || 6 > n || 2 > v)
                 E();
             else
                 C();
         }
 
         if(comando == 'P'){
-            //Not done.
-            scanf(" %d", &bit);
-
-            printf("C %llu %llu\n", x, xb);
+            X();
         }
 
         if(comando == 'S'){
-            //Not Done.
-            ull xtemp0, xtemp1;
-            scanf(" %llu %llu", &xtemp0, &xtemp1);
-            x0 = xtemp0;
-            x1 = xtemp1;
 
-            s = x0 / x1;
-            //s = s % n;
+            ull r, y;
+            scanf(" %llu %llu", &r, &y);
+
+            ulll inversoModular = modInverse(r, n);
+
+            ulll s = (inversoModular * y) % n;
 
             print128(s);
         }
